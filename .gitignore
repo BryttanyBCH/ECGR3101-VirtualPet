@@ -1,2 +1,8 @@
 # Files and folders to be ignored
+.launches
+.settings
+AdaFruitFiles
+Debug/
 targetConfigs/
+.ccsproject
+.cproject

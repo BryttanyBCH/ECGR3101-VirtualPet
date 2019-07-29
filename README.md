@@ -1,5 +1,7 @@
 # ECGR3101-VirtualPet
 
+Slime pet??
+
 Required Systems:
 - Menu
   - Runs Idle in background
@@ -8,9 +10,12 @@ Required Systems:
 - Mood
   - Always running
   - Signed int: negative = sad, positive = happy
+  - If pet is too sad, it runs away
 - Hunger (food level)
   - Always running
   - Unsigned int: 0% = emtpy stomach, 100% = full stomach
+  - lower hunger makes mood decrease faster
+  - If stomach is empty, pet dies
 - Interact
   - For editing Mood and Hunger
   - Walk: Increases mood, slightly decreases food level

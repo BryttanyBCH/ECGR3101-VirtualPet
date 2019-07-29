@@ -1,1 +1,1 @@
-"./PLL.obj" "./ST7735.obj" "./ST7735TestMain.obj" "./tm4c123gh6pm_startup_ccs.obj" "../tm4c123gh6pm.cmd" -llibc.a 
+"./PLL.obj" "./ST7735.obj" "./ST7735TestMain.obj" "./tm4c123gh6pm_startup_ccs.obj" "../tm4c123gh6pm.cmd" -llibc.a -l"/opt/TivaWare_C_Series-2.1.2.111/driverlib/ccs/Debug/driverlib.lib" 

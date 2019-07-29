@@ -15,6 +15,7 @@ ORDERED_OBJS += \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
 -llibc.a \
+-l"/opt/TivaWare_C_Series-2.1.2.111/driverlib/ccs/Debug/driverlib.lib" \
 
 -include ../makefile.init
 
@@ -121,33 +122,33 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-ST7735_4C123.out \
+VirtualPet.out \
 
 EXE_OUTPUTS__QUOTED += \
-"ST7735_4C123.out" \
+"VirtualPet.out" \
 
 BIN_OUTPUTS += \
-ST7735_4C123.hex \
+VirtualPet.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"ST7735_4C123.hex" \
+"VirtualPet.hex" \
 
 
 # All Target
-all: ST7735_4C123.out
+all: VirtualPet.out
 
 # Tool invocations
-ST7735_4C123.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+VirtualPet.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --c99 --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --diag_warning=225 --diag_wrap=off --display_error_number --c_src_interlist --asm_listing -z -m"ST7735_4C123.map" --stack_size=512 --heap_size=0 -i"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/lib" -i"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="ST7735_4C123_linkInfo.xml" --rom_model -o "ST7735_4C123.out" $(ORDERED_OBJS)
+	"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --c99 --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --diag_warning=225 --diag_wrap=off --display_error_number --c_src_interlist --asm_listing -z -m"VirtualPet.map" --stack_size=512 --heap_size=0 -i"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/lib" -i"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="VirtualPet_linkInfo.xml" --rom_model -o "VirtualPet.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-ST7735_4C123.hex: $(EXE_OUTPUTS)
+VirtualPet.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armhex"  -o "ST7735_4C123.hex" $(EXE_OUTPUTS__QUOTED)
+	"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armhex"  -o "VirtualPet.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 

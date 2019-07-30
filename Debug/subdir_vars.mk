@@ -12,31 +12,31 @@ CMD_SRCS += \
 C_SRCS += \
 ../PLL.c \
 ../ST7735.c \
-../ST7735TestMain.c \
+../main.c \
 ../tm4c123gh6pm_startup_ccs.c 
 
 C_DEPS += \
 ./PLL.d \
 ./ST7735.d \
-./ST7735TestMain.d \
+./main.d \
 ./tm4c123gh6pm_startup_ccs.d 
 
 OBJS += \
 ./PLL.obj \
 ./ST7735.obj \
-./ST7735TestMain.obj \
+./main.obj \
 ./tm4c123gh6pm_startup_ccs.obj 
 
 OBJS__QUOTED += \
 "PLL.obj" \
 "ST7735.obj" \
-"ST7735TestMain.obj" \
+"main.obj" \
 "tm4c123gh6pm_startup_ccs.obj" 
 
 C_DEPS__QUOTED += \
 "PLL.d" \
 "ST7735.d" \
-"ST7735TestMain.d" \
+"main.d" \
 "tm4c123gh6pm_startup_ccs.d" 
 
 EXE_SRCS__QUOTED += \
@@ -45,7 +45,7 @@ EXE_SRCS__QUOTED += \
 C_SRCS__QUOTED += \
 "../PLL.c" \
 "../ST7735.c" \
-"../ST7735TestMain.c" \
+"../main.c" \
 "../tm4c123gh6pm_startup_ccs.c" 
 
 

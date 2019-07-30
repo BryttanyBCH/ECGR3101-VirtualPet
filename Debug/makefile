@@ -10,7 +10,7 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./PLL.obj" \
 "./ST7735.obj" \
-"./ST7735TestMain.obj" \
+"./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -155,10 +155,10 @@ VirtualPet.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "PLL.lst" "ST7735.lst" "ST7735TestMain.lst" "tm4c123gh6pm_startup_ccs.lst" 
-	-$(RM) "PLL.obj" "ST7735.obj" "ST7735TestMain.obj" "tm4c123gh6pm_startup_ccs.obj" 
-	-$(RM) "PLL.d" "ST7735.d" "ST7735TestMain.d" "tm4c123gh6pm_startup_ccs.d" 
-	-$(RM) "PLL.asm" "ST7735.asm" "ST7735TestMain.asm" "tm4c123gh6pm_startup_ccs.asm" 
+	-$(RM) "PLL.lst" "ST7735.lst" "main.lst" "tm4c123gh6pm_startup_ccs.lst" 
+	-$(RM) "PLL.obj" "ST7735.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
+	-$(RM) "PLL.d" "ST7735.d" "main.d" "tm4c123gh6pm_startup_ccs.d" 
+	-$(RM) "PLL.asm" "ST7735.asm" "main.asm" "tm4c123gh6pm_startup_ccs.asm" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

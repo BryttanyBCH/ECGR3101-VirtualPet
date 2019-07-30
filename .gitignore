@@ -6,3 +6,8 @@ Debug/
 targetConfigs/
 .ccsproject
 .cproject
+.ccsproject
+Debug/makefile
+Debug/sources.mk
+Debug/subdir_rules.mk
+Debug/subdir_vars.mk

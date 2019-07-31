@@ -13,8 +13,12 @@
 #include "driverlib/gpio.h"
 #include "driverlib/pin_map.h"
 
+#define ADC_SEQUENCER 3
+
 void drawTest();
 void drawTest2();
+
+double ADC0out = 0.0;
 
 void DelayWait10ms(uint32_t n){
     uint32_t volatile time;
@@ -60,6 +64,40 @@ void initGPIO()
     GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6|GPIO_PIN_2);
 }
 
+void initADC0(){
+    // Init ADC Module
+    SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ); // Set up clock freq for ADC
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
+
+    // Configure ADC0 Sequencer
+    ADCSequenceDisable(ADC0_BASE, ADC_SEQUENCER);
+    ADCSequenceConfigure(ADC0_BASE, ADC_SEQUENCER, ADC_TRIGGER_PROCESSOR, 0);
+    ADCSequenceStepConfigure(ADC0_BASE, ADC_SEQUENCER, 0, ADC_CTL_CH4 | ADC_CTL_IE | ADC_CTL_END);
+    ADCSequenceEnable(ADC0_BASE, ADC_SEQUENCER);
+}
+
+typedef enum{TRIGGER, WAIT, RESULT} adc_states;
+
+void taskReadADC0(){
+    static adc_states state = TRIGGER;
+
+    if(state == TRIGGER){
+        ADCProcessorTrigger(ADC0_BASE, ADC_SEQUENCER);
+        state = WAIT;
+    } else if(state == WAIT){
+        if(ADCIntStatus(ADC0_BASE, ADC_SEQUENCER, false)){
+            state = RESULT;
+        }
+    } else if(state == RESULT){
+        uint32_t pui32ADC0Value;
+        ADCSequenceDataGet(ADC0_BASE, ADC_SEQUENCER, &pui32ADC0Value);
+        ADC0out = (double)pui32ADC0Value;
+        state = TRIGGER;
+    }
+}
+
+
 void initMisc()
 {
     //Set system clock to 80 MHz
@@ -82,7 +120,20 @@ void drawTest2()
 
 int main(void)
 {
-    initGPIO();
     initMisc();
+    initGPIO();
+    initADC0();
+
+    while(1){
+
+        taskReadADC0();
+
+        if(ADC0out > 3000.0){
+            drawTest();
+        }
+        else if(ADC0out < 1000.0){
+            drawTest2();
+        }
+    }
 }
 

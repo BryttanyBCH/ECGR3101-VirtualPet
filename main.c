@@ -64,7 +64,7 @@ void initGPIO()
     GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6|GPIO_PIN_2);
 }
 
-void initADC0(){
+void initADC0(int channelNum){
     // Init ADC Module
     SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ); // Set up clock freq for ADC
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
@@ -73,7 +73,15 @@ void initADC0(){
     // Configure ADC0 Sequencer
     ADCSequenceDisable(ADC0_BASE, ADC_SEQUENCER);
     ADCSequenceConfigure(ADC0_BASE, ADC_SEQUENCER, ADC_TRIGGER_PROCESSOR, 0);
-    ADCSequenceStepConfigure(ADC0_BASE, ADC_SEQUENCER, 0, ADC_CTL_CH4 | ADC_CTL_IE | ADC_CTL_END);
+
+    switch(channelNum) {
+    case 4: //VertStick
+        ADCSequenceStepConfigure(ADC0_BASE, ADC_SEQUENCER, 0, ADC_CTL_CH4 | ADC_CTL_IE | ADC_CTL_END);
+        break;
+    case 7: //Accelerometer
+        ADCSequenceStepConfigure(ADC0_BASE, ADC_SEQUENCER, 0, ADC_CTL_CH7 | ADC_CTL_IE | ADC_CTL_END);
+        break;
+    }
     ADCSequenceEnable(ADC0_BASE, ADC_SEQUENCER);
 }
 
@@ -108,21 +116,21 @@ void drawTest()
 {
     //Initialize LCD
     ST7735_InitR(INITR_REDTAB);
-    ST7735_FillScreen(0x1211);
+    ST7735_FillScreen(0xF000);
 }
 
 void drawTest2()
 {
     //Initialize LCD
     ST7735_InitR(INITR_REDTAB);
-    ST7735_FillScreen(0x7171);
+    ST7735_FillScreen(0x0F00);
 }
 
 int main(void)
 {
     initMisc();
     initGPIO();
-    initADC0();
+    initADC0(4);
 
     while(1){
 
@@ -130,9 +138,11 @@ int main(void)
 
         if(ADC0out > 3000.0){
             drawTest();
+            ADC0out = 1900.0;
         }
         else if(ADC0out < 1000.0){
             drawTest2();
+            ADC0out = 1900.0;
         }
     }
 }

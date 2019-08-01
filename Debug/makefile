@@ -2,7 +2,9 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-CG_TOOL_ROOT := /opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS
+SHELL = cmd.exe
+
+CG_TOOL_ROOT := D:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -10,17 +12,18 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./PLL.obj" \
 "./ST7735.obj" \
+"./accelerometer.obj" \
 "./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
+-l"C:/ti/tivaware_c_series_2_1_4_178/driverlib/ccs/Debug/driverlib.lib" \
 -llibc.a \
--l"/opt/TivaWare_C_Series-2.1.2.111/driverlib/ccs/Debug/driverlib.lib" \
 
 -include ../makefile.init
 
-RM := rm -rf
-RMDIR := rm -rf
+RM := DEL /F
+RMDIR := RMDIR /S/Q
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -141,24 +144,24 @@ all: VirtualPet.out
 VirtualPet.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --c99 --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --diag_warning=225 --diag_wrap=off --display_error_number --c_src_interlist --asm_listing -z -m"VirtualPet.map" --stack_size=512 --heap_size=0 -i"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/lib" -i"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="VirtualPet_linkInfo.xml" --rom_model -o "VirtualPet.out" $(ORDERED_OBJS)
+	"D:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --c99 --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --diag_warning=225 --diag_wrap=off --display_error_number --c_src_interlist --asm_listing -z -m"VirtualPet.map" --stack_size=512 --heap_size=0 -i"D:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/lib" -i"D:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="VirtualPet_linkInfo.xml" --rom_model -o "VirtualPet.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 VirtualPet.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"/opt/ccstudio/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armhex"  -o "VirtualPet.hex" $(EXE_OUTPUTS__QUOTED)
+	"D:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/bin/armhex"  -o "VirtualPet.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "PLL.lst" "ST7735.lst" "main.lst" "tm4c123gh6pm_startup_ccs.lst" 
-	-$(RM) "PLL.obj" "ST7735.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
-	-$(RM) "PLL.d" "ST7735.d" "main.d" "tm4c123gh6pm_startup_ccs.d" 
-	-$(RM) "PLL.asm" "ST7735.asm" "main.asm" "tm4c123gh6pm_startup_ccs.asm" 
+	-$(RM) "PLL.lst" "ST7735.lst" "accelerometer.lst" "main.lst" "tm4c123gh6pm_startup_ccs.lst" 
+	-$(RM) "PLL.obj" "ST7735.obj" "accelerometer.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
+	-$(RM) "PLL.d" "ST7735.d" "accelerometer.d" "main.d" "tm4c123gh6pm_startup_ccs.d" 
+	-$(RM) "PLL.asm" "ST7735.asm" "accelerometer.asm" "main.asm" "tm4c123gh6pm_startup_ccs.asm" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

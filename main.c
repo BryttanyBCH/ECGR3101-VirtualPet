@@ -19,6 +19,10 @@ void drawTest();
 void drawTest2();
 
 double ADC0out = 0.0;
+uint8_t hunger = 0;
+uint8_t happiness = 100;
+
+typedef enum {EAT, WALK, RUN_AWAY, PERISH} animation_type;
 
 void DelayWait10ms(uint32_t n){
     uint32_t volatile time;
@@ -124,6 +128,24 @@ void drawTest2()
     //Initialize LCD
     ST7735_InitR(INITR_REDTAB);
     ST7735_FillScreen(0x0F00);
+}
+
+void renderAnimation(animation_type type){
+
+    switch(type){
+        case EAT:
+
+            break;
+        case WALK:
+
+            break;
+        case RUN_AWAY:
+
+            break;
+        case PERISH:
+
+            break;
+    }
 }
 
 int main(void)

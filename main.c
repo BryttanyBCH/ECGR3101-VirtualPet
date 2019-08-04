@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "ST7735.h"
 #include "PLL.h"
+#include "sprite.h"
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -114,20 +115,21 @@ void initMisc()
 {
     //Set system clock to 80 MHz
     PLL_Init(Bus80MHz);
+    ST7735_InitR(INITR_REDTAB);
 }
 
 void drawTest()
 {
     //Initialize LCD
-    ST7735_InitR(INITR_REDTAB);
-    ST7735_FillScreen(0xF000);
+    //ST7735_FillScreen(0xFFFF);
+    ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);
 }
 
 void drawTest2()
 {
     //Initialize LCD
-    ST7735_InitR(INITR_REDTAB);
-    ST7735_FillScreen(0x0F00);
+    //ST7735_FillScreen(0xFFFF);
+    ST7735_DrawBitmap(0, 128, fiv_two, 128, 128);
 }
 
 void renderAnimation(animation_type type){

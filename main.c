@@ -23,13 +23,10 @@
 #define BUTTON_2            GPIO_PIN_2
 #define analog_vert         GPIO_PIN_3
 
-void drawTest();
-void drawTest2();
-
 double g_ADC0out = 0.0;
 int32_t g_hunger = 0;
 int32_t g_happiness = 100;
-uint32_t frame_count = 0;
+uint32_t g_frame_count = 0;
 
 typedef enum {M_FEED, M_WALK, M_PET, M_EXIT} menu_item;
 menu_item menuSelectItem = M_FEED;
@@ -94,7 +91,7 @@ void PortDIntHandler()
                 state = WALK;
                 break;
             case M_PET:
-                state = PET;
+                //play animation, increase happiness
                 break;
             case M_EXIT:
                 state = IDLE;
@@ -102,19 +99,20 @@ void PortDIntHandler()
             }
             break;
         case WALK:
-            //stop walking
+            state = IDLE;
             break;
         }
     }
+    DelayWait10ms(1);
 }
 
 void timer0IntHandler()
 {                                                    //Interrupt for frame timer
     TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-    if(frame_count > 0xFFFFFFF0){
-        frame_count = 0;
+    if(g_frame_count > 0xFFFFFFF0){
+        g_frame_count = 0;
     }
-    frame_count++;
+    g_frame_count++;
 }
 
 void initGPIO()
@@ -204,18 +202,20 @@ void menuSelect()
     ST7735_FillScreen(0xFFFF);
     printMenu(menuSelectItem);
 
-    while(1){
+    while(state == MENU){
           taskReadADC0();
 
           if(g_ADC0out > 3000.0){
               //drawTest();
               menuSelectItem--;
               g_ADC0out = 1900.0;
+              DelayWait10ms(1);
           }
           else if(g_ADC0out < 1000.0){
               //drawTest2();
               menuSelectItem++;
               g_ADC0out = 1900.0;
+              DelayWait10ms(1);
           }
           printMenu(menuSelectItem);
       }
@@ -228,8 +228,6 @@ while(1){
         case START:
             //Display Start Screen
             printStart();
-            //Clear vars from previous game
-
             break;
         case IDLE:
             ST7735_DrawBitmap(0, 128, one_one, 128, 128);
@@ -239,6 +237,8 @@ while(1){
             break;
         case EAT:
             ST7735_DrawBitmap(0, 128, for_thr, 128, 128);
+            int i; for(i = 0; i < 100; i++) {DelayWait10ms(1);}
+            state = IDLE;
             break;
         case WALK:
             ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
@@ -254,7 +254,6 @@ while(1){
                     increaseHappiness(2);
                 }
             }
-
             break;
         case RUN_AWAY:
             ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);

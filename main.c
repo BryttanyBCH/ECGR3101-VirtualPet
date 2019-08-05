@@ -26,9 +26,9 @@
 void drawTest();
 void drawTest2();
 
-double ADC0out = 0.0;
-uint8_t hunger = 0;
-uint8_t happiness = 100;
+double g_ADC0out = 0.0;
+int32_t g_hunger = 0;
+int32_t g_happiness = 100;
 uint32_t frame_count = 0;
 
 typedef enum {M_FEED, M_WALK, M_PET, M_EXIT} menu_item;
@@ -43,6 +43,21 @@ void DelayWait10ms(uint32_t n){
         time = 727240*2/91;  // 10msec
         while(time){time--;}
         n--;
+    }
+}
+
+/*
+ * Adjusts g_happiness by adding a SIGNED int (int32_t) to global g_happiness variable.
+ * Upper limit is 100, lower limit is 0.
+ * @param amount : (int32_t) --- the amount to increase or decrease (negative number) g_happiness by
+ */
+void increaseHappiness(int32_t amount){
+    g_happiness += amount;
+    if(g_happiness > 100){
+        g_happiness = 100;
+    }
+    if(g_happiness < 0){
+        g_happiness = 0;
     }
 }
 
@@ -156,7 +171,7 @@ void taskReadADC0(){
     } else if(state == RESULT){
         uint32_t pui32ADC0Value;
         ADCSequenceDataGet(ADC0_BASE, ADC_SEQUENCER, &pui32ADC0Value);
-        ADC0out = (double)pui32ADC0Value;
+        g_ADC0out = (double)pui32ADC0Value;
         state = TRIGGER;
     }
 }
@@ -192,15 +207,15 @@ void menuSelect()
     while(1){
           taskReadADC0();
 
-          if(ADC0out > 3000.0){
+          if(g_ADC0out > 3000.0){
               //drawTest();
               menuSelectItem--;
-              ADC0out = 1900.0;
+              g_ADC0out = 1900.0;
           }
-          else if(ADC0out < 1000.0){
+          else if(g_ADC0out < 1000.0){
               //drawTest2();
               menuSelectItem++;
-              ADC0out = 1900.0;
+              g_ADC0out = 1900.0;
           }
           printMenu(menuSelectItem);
       }
@@ -227,6 +242,19 @@ while(1){
             break;
         case WALK:
             ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
+            double lastVal, currentVal = 0.0;
+            initADC0(7);
+            while(state == WALK){
+                taskReadADC0();
+                currentVal = g_ADC0out;
+                // check for motion threshold
+                if (abs(lastVal - currentVal) > 100.00){
+                    DelayWait10ms(25);
+                    lastVal = currentVal;
+                    increaseHappiness(2);
+                }
+            }
+
             break;
         case RUN_AWAY:
             ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);

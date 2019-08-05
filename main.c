@@ -31,6 +31,9 @@ uint8_t hunger = 0;
 uint8_t happiness = 100;
 uint32_t frame_count = 0;
 
+typedef enum {M_FEED, M_WALK, M_PET, M_EXIT} menu_item;
+menu_item menuSelectItem = M_FEED;
+
 typedef enum {START, IDLE, MENU, EAT, WALK, PET, RUN_AWAY, PERISH} game_state;
 game_state state = START;
 
@@ -54,14 +57,40 @@ void PortDIntHandler()
 
     if((status & GPIO_INT_PIN_6) == GPIO_INT_PIN_6)
     {
-        if (state == START) {state = IDLE;}
+        switch(state){
+        case START:
+            state = IDLE;
+            break;
+        case IDLE:
+            state = MENU;
+            break;
+        }
     }
     else if ((status & GPIO_INT_PIN_2) == GPIO_INT_PIN_2)
     {
-
+        switch(state){
+        case MENU:
+            //select menu item
+            switch(menuSelectItem){
+            case M_FEED:
+                state = EAT;
+                break;
+            case M_WALK:
+                state = WALK;
+                break;
+            case M_PET:
+                state = PET;
+                break;
+            case M_EXIT:
+                state = IDLE;
+                break;
+            }
+            break;
+        case WALK:
+            //stop walking
+            break;
+        }
     }
-    //DelayWait10ms(100);
-    //DelayWait10ms(100);
 }
 
 void timer0IntHandler()
@@ -154,20 +183,27 @@ void initMisc()
     ST7735_InitR(INITR_REDTAB);
 }
 
-void drawTest()
+void menuSelect()
 {
-    //Initialize LCD
+    initADC0(4);
     ST7735_FillScreen(0xFFFF);
-    //ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);
-    printMenu(1);
-}
+    printMenu(menuSelectItem);
 
-void drawTest2()
-{
-    //Initialize LCD
-    //ST7735_FillScreen(0xFFFF);
-    ST7735_DrawBitmap(0, 128, fiv_two, 128, 128);
-    //printStart();
+    while(1){
+          taskReadADC0();
+
+          if(ADC0out > 3000.0){
+              //drawTest();
+              menuSelectItem--;
+              ADC0out = 1900.0;
+          }
+          else if(ADC0out < 1000.0){
+              //drawTest2();
+              menuSelectItem++;
+              ADC0out = 1900.0;
+          }
+          printMenu(menuSelectItem);
+      }
 }
 
 void gameState(){
@@ -181,23 +217,22 @@ while(1){
 
             break;
         case IDLE:
-            drawTest2();
-
+            ST7735_DrawBitmap(0, 128, one_one, 128, 128);
             break;
         case MENU:
-
+            menuSelect();
             break;
         case EAT:
-
+            ST7735_DrawBitmap(0, 128, for_thr, 128, 128);
             break;
         case WALK:
-
+            ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
             break;
         case RUN_AWAY:
-
+            ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);
             break;
         case PERISH:
-
+            ST7735_DrawBitmap(0, 128, nin_six, 128, 128);
             break;
         default:
             state = START;
@@ -208,31 +243,11 @@ while(1){
 
 int main(void)
 {
-    int menuSelect = 0;
-
     initMisc();
     initGPIO();
-    initADC0(4);
     initTimer0();
 
     ST7735_FillScreen(0xFFFF);
     gameState();
-
-    while(1){
-
-        taskReadADC0();
-
-        if(ADC0out > 3000.0){
-            //drawTest();
-            menuSelect--;
-            ADC0out = 1900.0;
-        }
-        else if(ADC0out < 1000.0){
-            //drawTest2();
-            menuSelect++;
-            ADC0out = 1900.0;
-        }
-        //printMenu(menuSelect % 4);
-    }
 }
 

@@ -4,6 +4,8 @@
 #include "ST7735.h"
 #include "PLL.h"
 #include "sprite.h"
+#include "menu.h"
+#include "driverlib/timer.h"
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -16,12 +18,18 @@
 
 #define ADC_SEQUENCER 3
 
+#define CONTROLLER_PORT     GPIO_PORTD_BASE
+#define BUTTON_1            GPIO_PIN_6
+#define BUTTON_2            GPIO_PIN_7
+#define analog_vert         GPIO_PIN_3
+
 void drawTest();
 void drawTest2();
 
 double ADC0out = 0.0;
 uint8_t hunger = 0;
 uint8_t happiness = 100;
+uint32_t frame_count = 0;
 
 typedef enum {EAT, WALK, RUN_AWAY, PERISH} animation_type;
 
@@ -49,6 +57,15 @@ void PortDIntHandler()
     }
     DelayWait10ms(100);
     DelayWait10ms(100);
+}
+
+void timer0IntHandler()
+{                                                    //Interrupt for frame timer
+    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    if(frame_count > 0xFFFFFFF0){
+        frame_count = 0;
+    }
+    frame_count++;
 }
 
 void initGPIO()
@@ -110,6 +127,20 @@ void taskReadADC0(){
     }
 }
 
+void initTimer0()
+{                                                          //initialize timer for frames
+    SysCtlClockSet(SYSCTL_SYSDIV_1|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
+    IntMasterEnable();
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
+    TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM);
+    TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC);
+    TimerLoadSet(TIMER0_BASE, TIMER_A, 4000000);
+    TimerIntRegister(TIMER0_BASE, TIMER_A, timer0IntHandler);
+    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    IntEnable(INT_TIMER0A);
+    TimerEnable(TIMER0_BASE,TIMER_A);
+}
 
 void initMisc()
 {
@@ -121,15 +152,17 @@ void initMisc()
 void drawTest()
 {
     //Initialize LCD
-    //ST7735_FillScreen(0xFFFF);
-    ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);
+    ST7735_FillScreen(0xFFFF);
+    //ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);
+    printMenu(1);
 }
 
 void drawTest2()
 {
     //Initialize LCD
-    //ST7735_FillScreen(0xFFFF);
-    ST7735_DrawBitmap(0, 128, fiv_two, 128, 128);
+    ST7735_FillScreen(0xFFFF);
+    //ST7735_DrawBitmap(0, 128, fiv_two, 128, 128);
+    printStart();
 }
 
 void renderAnimation(animation_type type){
@@ -155,19 +188,25 @@ int main(void)
     initMisc();
     initGPIO();
     initADC0(4);
+    initTimer0();
 
+    int menuSelect = 0;
+    ST7735_FillScreen(0xFFFF);
     while(1){
 
         taskReadADC0();
 
         if(ADC0out > 3000.0){
-            drawTest();
+            //drawTest();
+            menuSelect--;
             ADC0out = 1900.0;
         }
         else if(ADC0out < 1000.0){
-            drawTest2();
+            //drawTest2();
+            menuSelect++;
             ADC0out = 1900.0;
         }
+        printMenu(menuSelect % 4);
     }
 }
 

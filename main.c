@@ -20,7 +20,7 @@
 
 #define CONTROLLER_PORT     GPIO_PORTD_BASE
 #define BUTTON_1            GPIO_PIN_6
-#define BUTTON_2            GPIO_PIN_7
+#define BUTTON_2            GPIO_PIN_2
 #define analog_vert         GPIO_PIN_3
 
 void drawTest();
@@ -31,7 +31,8 @@ uint8_t hunger = 0;
 uint8_t happiness = 100;
 uint32_t frame_count = 0;
 
-typedef enum {EAT, WALK, RUN_AWAY, PERISH} animation_type;
+typedef enum {START, IDLE, MENU, EAT, WALK, PET, RUN_AWAY, PERISH} game_state;
+game_state state = START;
 
 void DelayWait10ms(uint32_t n){
     uint32_t volatile time;
@@ -42,6 +43,7 @@ void DelayWait10ms(uint32_t n){
     }
 }
 
+//For the buttons
 void PortDIntHandler()
 {
     uint32_t status = 0;
@@ -50,13 +52,16 @@ void PortDIntHandler()
     status = GPIOIntStatus(GPIO_PORTD_BASE, true);
     GPIOIntClear(GPIO_PORTD_BASE, status);
 
-    if((status & GPIO_INT_PIN_6) == GPIO_INT_PIN_6){
-      drawTest();
-    }else if ((status & GPIO_INT_PIN_2) == GPIO_INT_PIN_2){
-      drawTest2();
+    if((status & GPIO_INT_PIN_6) == GPIO_INT_PIN_6)
+    {
+        if (state == START) {state = IDLE;}
     }
-    DelayWait10ms(100);
-    DelayWait10ms(100);
+    else if ((status & GPIO_INT_PIN_2) == GPIO_INT_PIN_2)
+    {
+
+    }
+    //DelayWait10ms(100);
+    //DelayWait10ms(100);
 }
 
 void timer0IntHandler()
@@ -128,7 +133,7 @@ void taskReadADC0(){
 }
 
 void initTimer0()
-{                                                          //initialize timer for frames
+{                   //initialize timer for frames
     SysCtlClockSet(SYSCTL_SYSDIV_1|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
     IntMasterEnable();
     SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
@@ -160,14 +165,28 @@ void drawTest()
 void drawTest2()
 {
     //Initialize LCD
-    ST7735_FillScreen(0xFFFF);
-    //ST7735_DrawBitmap(0, 128, fiv_two, 128, 128);
-    printStart();
+    //ST7735_FillScreen(0xFFFF);
+    ST7735_DrawBitmap(0, 128, fiv_two, 128, 128);
+    //printStart();
 }
 
-void renderAnimation(animation_type type){
+void gameState(){
+while(1){
 
-    switch(type){
+    switch(state){
+        case START:
+            //Display Start Screen
+            printStart();
+            //Clear vars from previous game
+
+            break;
+        case IDLE:
+            drawTest2();
+
+            break;
+        case MENU:
+
+            break;
         case EAT:
 
             break;
@@ -180,18 +199,25 @@ void renderAnimation(animation_type type){
         case PERISH:
 
             break;
+        default:
+            state = START;
+            break;
     }
+}
 }
 
 int main(void)
 {
+    int menuSelect = 0;
+
     initMisc();
     initGPIO();
     initADC0(4);
     initTimer0();
 
-    int menuSelect = 0;
     ST7735_FillScreen(0xFFFF);
+    gameState();
+
     while(1){
 
         taskReadADC0();
@@ -206,7 +232,7 @@ int main(void)
             menuSelect++;
             ADC0out = 1900.0;
         }
-        printMenu(menuSelect % 4);
+        //printMenu(menuSelect % 4);
     }
 }
 

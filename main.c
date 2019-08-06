@@ -250,6 +250,7 @@ while(1){
                     ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
                     int i; for(i = 0; i < 50; i++) {DelayWait10ms(1);}
                     increaseHappiness(1);
+                    increaseHunger(-1);
                 }
             }
             break;

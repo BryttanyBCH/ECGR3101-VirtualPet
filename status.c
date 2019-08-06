@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "ST7735.h"
 #include "PLL.h"
+#include "sprite.h"
 #include "inc/tm4c123gh6pm.h"
 #include <stdbool.h>
 #include "inc/hw_types.h"
@@ -23,8 +24,8 @@
 #define BUTTON_2            GPIO_PIN_2
 #define analog_vert         GPIO_PIN_3
 
-extern int32_t g_hunger = 100;
-extern int32_t g_happiness = 100;
+extern int32_t g_hunger = 5;
+extern int32_t g_happiness = 5;
 extern uint32_t g_frame_count = 0;
 
 void timer0IntHandler(){                                                    //Interrupt for frame timer
@@ -71,14 +72,22 @@ void initTimer1(){
 
 void idle_animation(uint32_t frame) {                                        // idle animation
 
-    if(frame == 0){
-        ST7735_DrawCharS(42, 70, '1', ST7735_Color565(0, 0, 255), 0xFFFF, 3);
-    }
-    else if(frame == 1){
-        ST7735_DrawCharS(42, 70, '2', ST7735_Color565(0, 0, 255), 0xFFFF, 3);
-    }
-    else {
-        ST7735_DrawCharS(42, 70, '3', ST7735_Color565(0, 0, 255), 0xFFFF, 3);
+    switch(frame){
+    case 0:
+        //ST7735_DrawCharS(42, 70, '1', ST7735_Color565(0, 0, 255), 0xFFFF, 3);
+        ST7735_DrawBitmap(0, 128, one_one, 128, 100);
+        break;
+    case 1:
+        //ST7735_DrawCharS(42, 70, '2', ST7735_Color565(0, 0, 255), 0xFFFF, 3);
+        ST7735_DrawBitmap(0, 128, two_one, 128, 100);
+        break;
+    case 2:
+        //ST7735_DrawCharS(42, 70, '3', ST7735_Color565(0, 0, 255), 0xFFFF, 3);
+        ST7735_DrawBitmap(0, 128, thr_one, 128, 100);
+        break;
+    case 3:
+        ST7735_DrawBitmap(0, 128, two_one, 128, 100);
+        break;
     }
 
     ST7735_DrawCharS(3, 5, 'H', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
@@ -241,17 +250,17 @@ void idle_animation(uint32_t frame) {                                        // 
         }
 
 
-    ST7735_DrawCharS(3, 120, 'S', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(9, 120, 'W', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(15, 120, ' ', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(21, 120, '1', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(27, 120, '=', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(33, 120, '>', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-
-    ST7735_DrawCharS(39, 120, 'M', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(45, 120, 'e', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(51, 120, 'n', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
-    ST7735_DrawCharS(57, 120, 'u', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(3, 120, 'S', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(9, 120, 'W', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(15, 120, ' ', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(21, 120, '1', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(27, 120, '=', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(33, 120, '>', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//
+//    ST7735_DrawCharS(39, 120, 'M', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(45, 120, 'e', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(51, 120, 'n', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
+//    ST7735_DrawCharS(57, 120, 'u', ST7735_Color565(0, 0, 0), 0xFFFF, 1);
 
 }
 

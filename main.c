@@ -48,11 +48,21 @@ void DelayWait10ms(uint32_t n){
  */
 void increaseHappiness(int32_t amount){
     g_happiness += amount;
-    if(g_happiness > 100){
-        g_happiness = 100;
+    if(g_happiness > 10){
+        g_happiness = 10;
     }
     if(g_happiness < 0){
         g_happiness = 0;
+    }
+}
+
+void increaseHunger(int32_t amount){
+    g_hunger += amount;
+    if(g_hunger > 10){
+        g_hunger = 10;
+    }
+    if(g_hunger < 0){
+        g_hunger = 0;
     }
 }
 
@@ -69,6 +79,7 @@ void PortDIntHandler()
     {
         switch(state){
         case START:
+            ST7735_FillScreen(0xFFFF);
             state = IDLE;
             break;
         case IDLE:
@@ -90,8 +101,13 @@ void PortDIntHandler()
                 break;
             case M_PET:
                 //play animation, increase happiness
+                ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
+                int i; for(i = 0; i < 100; i++) {DelayWait10ms(1);}
+                increaseHappiness(1);
+                state = IDLE;
                 break;
             case M_EXIT:
+                ST7735_FillScreen(0xFFFF);
                 state = IDLE;
                 break;
             }
@@ -103,15 +119,6 @@ void PortDIntHandler()
     }
     DelayWait10ms(1);
 }
-
-//void timer0IntHandler()
-//{                                                    //Interrupt for frame timer
-//    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-//    if(g_frame_count > 0xFFFFFFF0){
-//        g_frame_count = 0;
-//    }
-//    g_frame_count++;
-//}
 
 void initGPIO()
 {
@@ -172,21 +179,6 @@ void taskReadADC0(){
     }
 }
 
-//void initTimer0()
-//{                   //initialize timer for frames
-//    SysCtlClockSet(SYSCTL_SYSDIV_1|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
-//    IntMasterEnable();
-//    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
-//    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
-//    TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM);
-//    TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC);
-//    TimerLoadSet(TIMER0_BASE, TIMER_A, 4000000);
-//    TimerIntRegister(TIMER0_BASE, TIMER_A, timer0IntHandler);
-//    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-//    IntEnable(INT_TIMER0A);
-//    TimerEnable(TIMER0_BASE,TIMER_A);
-//}
-
 void initMisc()
 {
     //Set system clock to 80 MHz
@@ -222,13 +214,16 @@ void menuSelect()
 void gameState(){
 while(1){
 
+    if (g_hunger <= 0) {state = PERISH;}
+    if (g_happiness <= 0) {state = RUN_AWAY;}
+
     switch(state){
         case START:
             //Display Start Screen
             printStart();
             break;
         case IDLE:
-            ST7735_DrawBitmap(0, 128, one_one, 128, 128);
+            idle_animation(g_frame_count % 4);
             break;
         case MENU:
             menuSelect();
@@ -236,25 +231,32 @@ while(1){
         case EAT:
             ST7735_DrawBitmap(0, 128, for_thr, 128, 128);
             int i; for(i = 0; i < 100; i++) {DelayWait10ms(1);}
+            increaseHunger(3);
             state = IDLE;
             break;
         case WALK:
-            ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
+            ST7735_DrawBitmap(0, 128, one_one, 128, 128);
             double lastVal, currentVal = 0.0;
             initADC0(7);
+            g_ADC0out = 1900.0;
             while(state == WALK){
+                idle_animation(g_frame_count % 4);
                 taskReadADC0();
                 currentVal = g_ADC0out;
                 // check for motion threshold
-                if (abs(lastVal - currentVal) > 100.00){
+                if (abs(lastVal - currentVal) > 500.00){
                     DelayWait10ms(25);
                     lastVal = currentVal;
-                    increaseHappiness(2);
+                    ST7735_DrawBitmap(0, 128, fiv_one, 128, 128);
+                    int i; for(i = 0; i < 50; i++) {DelayWait10ms(1);}
+                    increaseHappiness(1);
                 }
             }
             break;
         case RUN_AWAY:
             ST7735_DrawBitmap(0, 128, one_fiv, 128, 128);
+            for(i = 0; i < 200; i++) {DelayWait10ms(1);}
+            while(1) {ST7735_FillScreen(0xFFFF);}
             break;
         case PERISH:
             ST7735_DrawBitmap(0, 128, nin_six, 128, 128);
@@ -272,6 +274,7 @@ int main(void)
     initMisc();
     initGPIO();
     initTimer0();
+    initTimer1();
 
     ST7735_FillScreen(0xFFFF);
     gameState();

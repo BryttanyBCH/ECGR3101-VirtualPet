@@ -5,6 +5,7 @@
 #include "PLL.h"
 #include "sprite.h"
 #include "menu.h"
+#include "status.h"
 #include "driverlib/timer.h"
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
@@ -24,9 +25,6 @@
 #define analog_vert         GPIO_PIN_3
 
 double g_ADC0out = 0.0;
-int32_t g_hunger = 0;
-int32_t g_happiness = 100;
-uint32_t g_frame_count = 0;
 
 typedef enum {M_FEED, M_WALK, M_PET, M_EXIT} menu_item;
 menu_item menuSelectItem = M_FEED;
@@ -106,14 +104,14 @@ void PortDIntHandler()
     DelayWait10ms(1);
 }
 
-void timer0IntHandler()
-{                                                    //Interrupt for frame timer
-    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-    if(g_frame_count > 0xFFFFFFF0){
-        g_frame_count = 0;
-    }
-    g_frame_count++;
-}
+//void timer0IntHandler()
+//{                                                    //Interrupt for frame timer
+//    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+//    if(g_frame_count > 0xFFFFFFF0){
+//        g_frame_count = 0;
+//    }
+//    g_frame_count++;
+//}
 
 void initGPIO()
 {
@@ -174,20 +172,20 @@ void taskReadADC0(){
     }
 }
 
-void initTimer0()
-{                   //initialize timer for frames
-    SysCtlClockSet(SYSCTL_SYSDIV_1|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
-    IntMasterEnable();
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
-    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
-    TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM);
-    TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC);
-    TimerLoadSet(TIMER0_BASE, TIMER_A, 4000000);
-    TimerIntRegister(TIMER0_BASE, TIMER_A, timer0IntHandler);
-    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-    IntEnable(INT_TIMER0A);
-    TimerEnable(TIMER0_BASE,TIMER_A);
-}
+//void initTimer0()
+//{                   //initialize timer for frames
+//    SysCtlClockSet(SYSCTL_SYSDIV_1|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
+//    IntMasterEnable();
+//    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+//    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
+//    TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM);
+//    TimerConfigure(TIMER0_BASE, TIMER_CFG_A_PERIODIC);
+//    TimerLoadSet(TIMER0_BASE, TIMER_A, 4000000);
+//    TimerIntRegister(TIMER0_BASE, TIMER_A, timer0IntHandler);
+//    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+//    IntEnable(INT_TIMER0A);
+//    TimerEnable(TIMER0_BASE,TIMER_A);
+//}
 
 void initMisc()
 {
@@ -265,6 +263,7 @@ while(1){
             state = START;
             break;
     }
+
 }
 }
 
